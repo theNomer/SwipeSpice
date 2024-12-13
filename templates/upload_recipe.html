@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Upload Recipe</h1>
+    <form action="{{ url_for('recipes.upload_recipe') }}" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
+            <input type="file" class="form-control" id="image" name="image">
+        </div>
+        <div class="mb-3">
+            <label for="ingredients" class="form-label">Ingredients</label>
+            <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="instructions" class="form-label">Instructions</label>
+            <textarea class="form-control" id="instructions" name="instructions" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="allergies" class="form-label">Allergies</label>
+            <input type="text" class="form-control" id="allergies" name="allergies">
+        </div>
+        <div class="mb-3">
+            <label for="diet_type" class="form-label">Diet Type</label>
+            <input type="text" class="form-control" id="diet_type" name="diet_type">
+        </div>
+        <div class="mb-3">
+            <label for="prep_time" class="form-label">Preparation Time (minutes)</label>
+            <input type="number" class="form-control" id="prep_time" name="prep_time">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload Recipe</button>
+    </form>
+</div>
+{% endblock %}
