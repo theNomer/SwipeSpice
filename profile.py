@@ -1,13 +1,21 @@
 from models import db, User
 from flask_login import login_required, current_user
 from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
+import json
 
 profile = Blueprint('profile', __name__)
+
+
+
+def load_allergies():
+    with open('static/allergies.json') as f:
+        return json.load(f)
 
 @profile.route('/profile', methods=['GET'])
 @login_required
 def view_profile():
-    return render_template('profile.html')
+    allergies_list = load_allergies()
+    return render_template('profile.html', allergies_list=allergies_list)
 
 @profile.route('/profile', methods=['POST'])
 @login_required

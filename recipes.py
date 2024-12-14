@@ -1,17 +1,25 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 from models import db, Recipe, Comment
 import os
+import json
+
 
 recipes = Blueprint('recipes', __name__)
 
+def load_allergies():
+    with open('static/allergies.json') as f:
+        return json.load(f)
+
 @recipes.route('/recipes')
+@login_required
 def view_recipes():
     all_recipes = Recipe.query.all()
     return render_template('recipes.html', recipes=all_recipes)
 
 @recipes.route('/recipe/<int:recipe_id>')
+@login_required
 def get_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     comments = [
@@ -33,6 +41,7 @@ def get_recipe(recipe_id):
     }
 
 @recipes.route('/recipe/<int:recipe_id>/comment', methods=['POST'])
+@login_required
 def add_comment(recipe_id):
     content = request.json.get('content')
     if not content:
@@ -55,20 +64,24 @@ def add_comment(recipe_id):
     }
 
 @recipes.route('/upload_recipe', methods=['GET', 'POST'])
+@login_required
 def upload_recipe():
+    allergies_list = load_allergies()
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         ingredients = request.form['ingredients']
         instructions = request.form['instructions']
-        allergies = request.form['allergies']
+        allergies = request.form.getlist('allergies')
         diet_type = request.form['diet_type']
         prep_time = request.form['prep_time']
         image = request.files['image']
 
         if image:
             filename = secure_filename(image.filename)
-            image.save(os.path.join('static/uploads', filename))
+            upload_path = os.path.join('static/uploads', filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            image.save(upload_path)
             image_url = url_for('static', filename='uploads/' + filename)
         else:
             image_url = None
@@ -78,11 +91,11 @@ def upload_recipe():
             description=description,
             ingredients=ingredients,
             instructions=instructions,
-            allergies=allergies.split(',') if allergies else [],
+            allergies=allergies,
             diet_type=diet_type,
             prep_time=prep_time,
             image_url=image_url,
-            author_id=current_user.id  # Assuming you have a current_user object
+            author_id=current_user.id
         )
 
         db.session.add(new_recipe)
@@ -90,4 +103,4 @@ def upload_recipe():
         flash('Recipe uploaded successfully!', 'success')
         return redirect(url_for('recipes.view_recipes'))
 
-    return render_template('upload_recipe.html')
+    return render_template('upload_recipe.html', allergies_list=allergies_list)

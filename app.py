@@ -40,13 +40,6 @@ def home():
     app.logger.info('Home route accessed')
     return redirect(url_for('auth.login'))
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    return 'Welcome to your dashboard!'
-
-
-
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

@@ -2,8 +2,13 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for,
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from flask_login import login_user, login_required, logout_user, current_user
+import json
 
 auth = Blueprint('auth', __name__)
+
+def load_allergies():
+    with open('static/allergies.json') as f:
+        return json.load(f)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -34,6 +39,7 @@ def logout():
 
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
+    allergies_list = load_allergies()
     if request.method == 'POST':
         email = request.form.get('email')
         username = request.form.get('username')
@@ -52,4 +58,4 @@ def sign_up():
             current_app.logger.error(f"Registration failed: {e}")
             flash('An error occurred. Please try again.', category='danger')
 
-    return render_template('register.html')
+    return render_template('register.html', allergies_list=allergies_list)

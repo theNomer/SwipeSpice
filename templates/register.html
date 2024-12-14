@@ -70,32 +70,24 @@
                     <div class="mb-3">
                         <label for="diet_preferences" class="form-label">Diet Preferences</label>
                         <select class="form-select" id="diet_preferences" name="diet_preferences">
-                            <option value="">Select your diet preference</option>
                             <option value="vegetarian">Vegetarian</option>
                             <option value="vegan">Vegan</option>
                             <option value="pescatarian">Pescatarian</option>
-                            <option value="omnivore">Omnivore</option>
+                            <option value="gluten_free">Gluten Free</option>
+                            <option value="dairy_free">Dairy Free</option>
+                            <option value="nut_free">Nut Free</option>
+                            <option value="none">None</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="allergies" class="form-label">Allergies</label>
                         <div id="allergies">
+                            {% for allergy in allergies_list %}
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allergies" value="nuts" id="allergy_nuts">
-                                <label class="form-check-label" for="allergy_nuts">Nuts</label>
+                                <input class="form-check-input" type="checkbox" name="allergies" value="{{ allergy }}" id="allergy_{{ allergy }}">
+                                <label class="form-check-label" for="allergy_{{ allergy }}">{{ allergy }}</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allergies" value="dairy" id="allergy_dairy">
-                                <label class="form-check-label" for="allergy_dairy">Dairy</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allergies" value="gluten" id="allergy_gluten">
-                                <label class="form-check-label" for="allergy_gluten">Gluten</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="allergies" value="shellfish" id="allergy_shellfish">
-                                <label class="form-check-label" for="allergy_shellfish">Shellfish</label>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Sign Up</button>

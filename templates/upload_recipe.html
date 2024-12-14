@@ -26,11 +26,26 @@
         </div>
         <div class="mb-3">
             <label for="allergies" class="form-label">Allergies</label>
-            <input type="text" class="form-control" id="allergies" name="allergies">
+            <div id="allergies">
+                {% for allergy in allergies_list %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="allergies" value="{{ allergy }}" id="allergy_{{ allergy }}">
+                    <label class="form-check-label" for="allergy_{{ allergy }}">{{ allergy }}</label>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         <div class="mb-3">
             <label for="diet_type" class="form-label">Diet Type</label>
-            <input type="text" class="form-control" id="diet_type" name="diet_type">
+            <select class="form-select" name="diet_type" id="diet_type">
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="pescatarian">Pescatarian</option>
+                <option value="gluten_free">Gluten Free</option>
+                <option value="dairy_free">Dairy Free</option>
+                <option value="nut_free">Nut Free</option>
+                <option value="none">None</option>
+            </select>
         </div>
         <div class="mb-3">
             <label for="prep_time" class="form-label">Preparation Time (minutes)</label>
