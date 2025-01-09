@@ -93,3 +93,8 @@ class Comment(db.Model):
 
     def __repr__(self):
         return f"<Comment {self.id} by User {self.user_id} on Recipe {self.recipe_id}>"
+
+class SwipedRecipe(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)

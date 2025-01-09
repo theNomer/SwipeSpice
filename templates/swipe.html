@@ -1,8 +1,60 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Swipe</h1>
-    <!-- Add your swipe content here -->
+<div class="container">
+    <div id="recipe-card" class="card" style="width: 18rem;">
+        <img id="recipe-image" src="" class="card-img-top" alt="Recipe Image">
+        <div class="card-body">
+            <h5 id="recipe-title" class="card-title"></h5>
+            <button id="check-button" class="btn btn-success">✔</button>
+            <button id="x-button" class="btn btn-danger">✖</button>
+        </div>
+    </div>
 </div>
+
+<script>
+    let recipes = {{ recipes|tojson }};
+    let currentIndex = 0;
+
+    function updateRecipeCard() {
+        if (currentIndex < recipes.length) {
+            document.getElementById('recipe-title').innerText = recipes[currentIndex].title;
+            document.getElementById('recipe-image').src = recipes[currentIndex].image_url || 'default_image_url';
+        } else {
+            document.getElementById('recipe-card').innerHTML = '<h5>No more recipes to swipe</h5>';
+        }
+    }
+
+    document.getElementById('check-button').addEventListener('click', () => {
+        fetch('/swipe/favorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ recipe_id: recipes[currentIndex].id })
+        }).then(response => response.json()).then(data => {
+            if (data.status === 'success') {
+                currentIndex++;
+                updateRecipeCard();
+            }
+        });
+    });
+
+    document.getElementById('x-button').addEventListener('click', () => {
+        fetch('/swipe/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ recipe_id: recipes[currentIndex].id })
+        }).then(response => response.json()).then(data => {
+            if (data.status === 'success') {
+                currentIndex++;
+                updateRecipeCard();
+            }
+        });
+    });
+
+    updateRecipeCard();
+</script>
 {% endblock %}
