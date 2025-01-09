@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div id="recipe-card" class="card" style="width: 18rem;">
-        <img id="recipe-image" src="" class="card-img-top" alt="Recipe Image">
-        <div class="card-body">
-            <h5 id="recipe-title" class="card-title"></h5>
-            <button id="check-button" class="btn btn-success">✔</button>
-            <button id="x-button" class="btn btn-danger">✖</button>
+<div class="container mt-5 d-flex flex-column align-items-center" style="height: 100vh;">
+    <h1 class="text-center mb-4">Swipe Recipes</h1>
+    <div id="alert-container" class="w-100"></div>
+    <div class="col-md-6">
+        <div class="card" id="recipe-card">
+            <img id="recipe-image" class="card-img-top" alt="Recipe Image">
+            <div class="card-body">
+                <h5 id="recipe-title" class="card-title"></h5>
+                <p class="card-text" id="recipe-description"></p>
+                <button id="check-button" class="btn btn-success">✔</button>
+                <button id="x-button" class="btn btn-danger">✖</button>
+            </div>
         </div>
     </div>
 </div>
@@ -20,9 +25,27 @@
         if (currentIndex < recipes.length) {
             document.getElementById('recipe-title').innerText = recipes[currentIndex].title;
             document.getElementById('recipe-image').src = recipes[currentIndex].image_url || 'default_image_url';
+            document.getElementById('recipe-description').innerText = recipes[currentIndex].description;
         } else {
             document.getElementById('recipe-card').innerHTML = '<h5>No more recipes to swipe</h5>';
         }
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alert-container');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        alertContainer.appendChild(alert);
+        setTimeout(() => {
+            alert.classList.remove('show');
+            alert.classList.add('hide');
+            setTimeout(() => alert.remove(), 500);
+        }, 3000);
     }
 
     document.getElementById('check-button').addEventListener('click', () => {
@@ -34,6 +57,7 @@
             body: JSON.stringify({ recipe_id: recipes[currentIndex].id })
         }).then(response => response.json()).then(data => {
             if (data.status === 'success') {
+                showAlert('Recipe added to favorites!', 'success');
                 currentIndex++;
                 updateRecipeCard();
             }
@@ -49,6 +73,7 @@
             body: JSON.stringify({ recipe_id: recipes[currentIndex].id })
         }).then(response => response.json()).then(data => {
             if (data.status === 'success') {
+                showAlert('Recipe removed!', 'danger');
                 currentIndex++;
                 updateRecipeCard();
             }
@@ -57,4 +82,19 @@
 
     updateRecipeCard();
 </script>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 600px;
+    }
+</style>
 {% endblock %}

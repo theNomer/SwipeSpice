@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, jsonify, request
 from models import db, Recipe, Favorite, SwipedRecipe
 from flask_login import current_user, login_required
+from sqlalchemy import and_
 
 swipe = Blueprint('swipe', __name__)
 
@@ -8,8 +9,21 @@ swipe = Blueprint('swipe', __name__)
 @login_required
 def swipe_view():
     swiped_recipe_ids = [swiped.recipe_id for swiped in SwipedRecipe.query.filter_by(user_id=current_user.id).all()]
-    recipes = Recipe.query.filter(~Recipe.id.in_(swiped_recipe_ids)).all()
-    serialized_recipes = [{'id': recipe.id, 'title': recipe.title, 'image_url': recipe.image_url} for recipe in recipes]
+
+    diet_preferences = current_user.diet_preferences
+    allergies = current_user.allergies
+
+    query = Recipe.query.filter(~Recipe.id.in_(swiped_recipe_ids))
+
+    if diet_preferences and diet_preferences != 'omnivore':
+        query = query.filter(Recipe.diet_type == diet_preferences)
+
+    if allergies:
+        for allergy in allergies:
+            query = query.filter(~Recipe.allergies.any(allergy))
+
+    recipes = query.all()
+    serialized_recipes = [{'id': recipe.id, 'title': recipe.title, 'image_url': recipe.image_url, 'description': recipe.description} for recipe in recipes]
     return render_template('swipe.html', recipes=serialized_recipes)
 
 @swipe.route('/swipe/favorite', methods=['POST'])

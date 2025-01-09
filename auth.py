@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from flask_login import login_user, login_required, logout_user, current_user
 import json
+from flask import flash, redirect, url_for
+
 
 auth = Blueprint('auth', __name__)
 
@@ -21,7 +23,7 @@ def login():
             if user and check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('profile.view_profile'))
+                return redirect(url_for('swipe.swipe_view'))
             else:
                 flash('Invalid username or password', category='danger')
     except Exception as e:
