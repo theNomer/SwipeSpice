@@ -2,37 +2,8 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Recipes</h1>
-    <form id="filter-form" method="GET" action="{{ url_for('recipes.view_recipes') }}">
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Search by title or description">
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label>Allergies</label>
-                    <div>
-                        {% for allergy in allergies %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="allergies" value="{{ allergy }}" id="allergy-{{ allergy }}">
-                            <label class="form-check-label" for="allergy-{{ allergy }}">
-                                {{ allergy }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="ingredients" class="form-control" placeholder="Search by ingredients">
-            </div>
-            <div class="col-md-3">
-                <input type="number" name="max_cook_time" class="form-control" placeholder="Max cook time (minutes)">
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Filter</button>
-    </form>
-    <div class="row mt-4">
+    <h1 class="text-center mb-4">Favorite Recipes</h1>
+    <div class="row">
         {% for recipe in recipes %}
         <div class="col-md-4 mb-4">
             <div class="card" onclick="showRecipeModal({{ recipe.id }})">
@@ -41,11 +12,7 @@
                     <h5 class="card-title">{{ recipe.title }}</h5>
                     <p class="card-text">{{ recipe.diet_type }}</p>
                     <button type="button" class="star-button" data-recipe-id="{{ recipe.id }}" onclick="event.stopPropagation(); toggleFavorite({{ recipe.id }})">
-                        {% if current_user.is_favorite(recipe.id) %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
+                        ★
                     </button>
                 </div>
             </div>

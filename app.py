@@ -8,7 +8,7 @@ from auth import auth as auth_blueprint
 from profile import profile as profile_blueprint
 from recipes import recipes as recipes_blueprint
 from swipe import swipe as swipe_blueprint
-
+from favorites import favorites as favorites_blueprint
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -30,11 +30,12 @@ def load_user(user_id):
         return None
 
 
-
 app.register_blueprint(auth_blueprint, url_prefix='/')
 app.register_blueprint(profile_blueprint)
 app.register_blueprint(recipes_blueprint)
 app.register_blueprint(swipe_blueprint)
+app.register_blueprint(favorites_blueprint)
+
 @app.route('/')
 def home():
     app.logger.info('Home route accessed')

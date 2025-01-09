@@ -1,6 +1,6 @@
-from models import db, User
+from models import db, User, Recipe, Favorite
 from flask_login import login_required, current_user
-from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
+from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app, jsonify
 import json
 
 profile = Blueprint('profile', __name__)
@@ -40,3 +40,18 @@ def update_profile():
         flash('An error occurred. Please try again.', category='danger')
 
     return redirect(url_for('profile.view_profile'))
+
+@profile.route('/favorite/<int:recipe_id>', methods=['POST'])
+@login_required
+def favorite_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    favorite = Favorite.query.filter_by(user_id=current_user.id, recipe_id=recipe_id).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({'status': 'removed'})
+    else:
+        new_favorite = Favorite(user_id=current_user.id, recipe_id=recipe_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+        return jsonify({'status': 'added'})

@@ -12,11 +12,37 @@ def load_allergies():
     with open('static/allergies.json') as f:
         return json.load(f)
 
-@recipes.route('/recipes')
+
+@recipes.route('/recipes', methods=['GET'])
 @login_required
 def view_recipes():
-    all_recipes = Recipe.query.all()
-    return render_template('recipes.html', recipes=all_recipes)
+    search = request.args.get('search', '')
+    allergies = request.args.getlist('allergies')
+    ingredients = request.args.get('ingredients', '')
+    max_cook_time = request.args.get('max_cook_time', type=int)
+
+    query = Recipe.query
+
+    if search:
+        query = query.filter((Recipe.title.ilike(f'%{search}%')) | (Recipe.description.ilike(f'%{search}%')))
+
+    if allergies:
+        for allergy in allergies:
+            query = query.filter(Recipe.allergies.any(allergy))
+
+    if ingredients:
+        query = query.filter(Recipe.ingredients.ilike(f'%{ingredients}%'))
+
+    if max_cook_time is not None:
+        query = query.filter(Recipe.prep_time <= max_cook_time)
+
+    recipes = query.all()
+
+    with open('static/allergies.json') as f:
+        allergies_list = json.load(f)
+
+    return render_template('recipes.html', recipes=recipes, allergies=allergies_list)
+
 
 @recipes.route('/recipe/<int:recipe_id>')
 @login_required
