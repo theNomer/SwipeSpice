@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, session, flash
 from models import db, Recipe, Favorite, SwipedRecipe
 from flask_login import current_user, login_required
 from sqlalchemy import and_
@@ -24,6 +24,11 @@ def swipe_view():
 
     recipes = query.all()
     serialized_recipes = [{'id': recipe.id, 'title': recipe.title, 'image_url': recipe.image_url, 'description': recipe.description} for recipe in recipes]
+
+    flash_message = session.pop('flash_message', None)
+    if flash_message:
+        flash(flash_message, 'success')
+
     return render_template('swipe.html', recipes=serialized_recipes)
 
 @swipe.route('/swipe/favorite', methods=['POST'])

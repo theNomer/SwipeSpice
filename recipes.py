@@ -28,7 +28,7 @@ def view_recipes():
 
     if allergies:
         for allergy in allergies:
-            query = query.filter(Recipe.allergies.any(allergy))
+            query = query.filter(~Recipe.allergies.any(allergy))
 
     if ingredients:
         query = query.filter(Recipe.ingredients.ilike(f'%{ingredients}%'))
