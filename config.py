@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    username = 'postgres'
+    username = ''
     password = ''
     database = 'swipeandspice'
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'postgresql://{username}:{password}@localhost:5432/{database}')
