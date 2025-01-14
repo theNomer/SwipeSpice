@@ -15,7 +15,7 @@ def load_allergies():
 @login_required
 def view_profile():
     allergies_list = load_allergies()
-    return render_template('profile.html', allergies_list=allergies_list)
+    return render_template('profile.html', allergies_list=allergies_list, current_user=current_user)
 
 @profile.route('/profile', methods=['POST'])
 @login_required
@@ -40,6 +40,7 @@ def update_profile():
         flash('An error occurred. Please try again.', category='danger')
 
     return redirect(url_for('profile.view_profile'))
+
 
 @profile.route('/favorite/<int:recipe_id>', methods=['POST'])
 @login_required
