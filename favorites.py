@@ -1,26 +1,29 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from models import db, Recipe, Comment
-import json
 
 favorites = Blueprint('favorites', __name__)
+
+def format_comments(comments):
+    return [
+        {
+            'author': comment.user.username,  # Assuming User model has a username field
+            'content': comment.content
+        }
+        for comment in comments
+    ]
 
 @favorites.route('/favorites', methods=['GET'])
 @login_required
 def view_favorites():
-    recipes = current_user.favorite_recipes  # Assuming a relationship is defined in the User model
+    recipes = current_user.favorite_recipes
     return render_template('favorites.html', recipes=recipes)
 
 @favorites.route('/recipe/<int:recipe_id>')
 @login_required
 def get_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
-    comments = [
-        {
-            'author': comment.user.username,  # Assuming User model has a username field
-            'content': comment.content
-        }
-    for comment in recipe.comments]
+    comments = format_comments(recipe.comments)
     return {
         'title': recipe.title,
         'description': recipe.description,
