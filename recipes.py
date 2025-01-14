@@ -9,9 +9,6 @@ import json
 
 recipes = Blueprint('recipes', __name__)
 
-# Utility Function: Load Allergies
-# Refactored for Reusability
-
 def load_allergies():
     with open('static/allergies.json') as f:
         return json.load(f)
@@ -26,7 +23,6 @@ def view_recipes():
 
     query = Recipe.query
 
-    # Refactored Filtering Logic for Readability (Applied OCP)
     query = filter_recipes(query, search, allergies, ingredients, max_cook_time)
 
     recipes = query.all()
@@ -34,7 +30,6 @@ def view_recipes():
 
     return render_template('recipes.html', recipes=recipes, allergies=allergies_list)
 
-# Refactored Filtering Logic to Separate Function
 def filter_recipes(query, search, allergies, ingredients, max_cook_time):
     if search:
         query = query.filter((Recipe.title.ilike(f'%{search}%')) | (Recipe.description.ilike(f'%{search}%')))
